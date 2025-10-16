@@ -10,5 +10,5 @@ The workshop is based on the walking example from the following paper: "An Intro
 
 We will use a model with 4 segments (femurs, tibia, metatarsal, and torso) driven by ankle, knee, and hip torques. 
 
-h1<Pre-requisites:>
-Install CasADi, following the instructions here.
+# Pre-requisites:
+Install CasADi, following the instructions (here)[https://web.casadi.org/get/].
