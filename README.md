@@ -59,8 +59,7 @@ The solver will compute an optimal periodic hop and then:
    - Parameters: masses (`mp, mf, mt, mm`), inertias (`Ip, If, It, Im`), lengths (`lp, lf, lt, lm`), spring geometry (`ls, lc, lso`) and stiffness `ks`, damping `c`.
    - **Cost**:
    - 
-     J = ∫ ( w₁ T<sub>hip</sub>² + w₂ T<sub>knee</sub>² + w₃ T<sub>ankle</sub>² + w₄ T<sub>mtp</sub>² ) dt  
-+ (small acceleration regularization)
+     J = ∫ ( w₁ T<sub>hip</sub>² + w₂ T<sub>knee</sub>² + w₃ T<sub>ankle</sub>² + w₄ T<sub>mtp</sub>² ) dt  + (small acceleration regularization)
   
      Weights `w1..w4` are editable.
 
