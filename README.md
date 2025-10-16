@@ -58,9 +58,10 @@ The solver will compute an optimal periodic hop and then:
    - Segments: pelvis (`p`), femur (`f`), tibia (`t`), foot/toes (`m`).
    - Parameters: masses (`mp, mf, mt, mm`), inertias (`Ip, If, It, Im`), lengths (`lp, lf, lt, lm`), spring geometry (`ls, lc, lso`) and stiffness `ks`, damping `c`.
    - **Cost**:  
-     \[
-     J \;=\; \int \left(w_1 T_{hip}^2 + w_2 T_{knee}^2 + w_3 T_{ankle}^2 + w_4 T_{mtp}^2\right)\,dt \;+\; \text{(small accel regularization)}
-     \]
+     $$
+      J = \int \left(w_1 T_{hip}^2 + w_2 T_{knee}^2 + w_3 T_{ankle}^2 + w_4 T_{mtp}^2\right)\, dt
+      \;+\; \text{(small accel regularization)}
+     $$
      Weights `w1..w4` are editable.
 
 2. **Choose environment & mesh**
