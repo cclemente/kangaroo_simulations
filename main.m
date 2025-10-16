@@ -110,7 +110,7 @@ lct = 0.12; lcm = 0.045;
 % Start with a small value like 0.1- 1.0
 % Increase if your system oscillates
 % Decrease if your system feels over-damped or sluggish
-c = 0.1;
+c = 1;
 % c = 0.1;
 %c = 1;
 
@@ -209,14 +209,32 @@ ddtt = opti.variable(1,N);   ddtm = opti.variable(1,N);
 Th = opti.variable(1,N);     Tk = opti.variable(1,N);     
 Ta = opti.variable(1,N);     Fx = opti.variable(1,N);     
 Fy = opti.variable(1,N);     Tt = opti.variable(1,N);
-% Stride time
-% T = opti.variable(1); % seconds
-% opti.subject_to(0.1 <= T <= 4);
-% opti.set_initial(T, 0.3);
-T = 0.3;
-L = 0.5;
-dt = T/N;
-time = 0:0.3/100:0.3;
+
+
+
+
+% ---- Free stride time and length ----
+T = opti.variable(1);                 % stride time [s]
+L = opti.variable(1);                 % stride length [m]
+
+% Sensible bounds (adjust as you like)
+opti.subject_to(0.15 <= T <= 0.8);    % keep time from going to 0 or huge
+opti.subject_to(0.2  <= L <= 2.0);    % avoid degenerate tiny/huge steps
+
+% Initial guesses used also to seed other variables:
+T0 = 0.3;    % numeric seeds
+L0 = 0.5;
+
+opti.set_initial(T, T0);
+opti.set_initial(L, L0);
+
+% Collocation step
+dt = T / N;
+
+% T = 0.3;
+% L = 0.5;
+% dt = T/N;
+%time = 0:0.3/100:0.3;
 
 xt = xt_s/100;
 yt = yt_s/100;
@@ -243,10 +261,10 @@ opti.subject_to(0 <= tf - tt <= pi);
 
 opti.subject_to(-50 <= Th <= 50);
 opti.subject_to(-50 <= Tk <= 50);
-opti.subject_to(-2 <= Ta <= 2);%CJC reduced from 50
-opti.subject_to(-1 <= Tt <= 1);%CJC reduced from 50
+opti.subject_to(-20 <= Ta <= 20);%CJC reduced from 50
+opti.subject_to(-20 <= Tt <= 20);%CJC reduced from 50
 opti.subject_to(-400 <= Fx <= 400);
-opti.subject_to(0 <= Fy <= 500);
+opti.subject_to(0 <= Fy <= 600);
 
 % TO DO bounds for other variables
 
@@ -272,7 +290,7 @@ opti.set_initial(tf, tfguess);
 opti.set_initial(tt, ttguess);
 opti.set_initial(tm, tmguess);
 
-opti.set_initial(dxt_s, 100*L/T*ones(1,N+1));
+opti.set_initial(dxt_s, 100*L0/T0*ones(1,N+1));
 opti.set_initial(dyt_s, 0.1*ones(1,N+1));
 opti.set_initial(dtp, ones(1,N+1));
 opti.set_initial(dtf, ones(1,N+1));
@@ -394,7 +412,13 @@ for k=1:N
     opti.subject_to(ytk_plus*Fxk_plus == 0);
     opti.subject_to(ytk_plus*Fyk_plus == 0);
 
-    opti.subject_to(Fxk_plus - 100*dxtk_plus*Fyk_plus == 0);
+    %opti.subject_to(Fxk_plus - 100*dxtk_plus*Fyk_plus == 0);
+    
+    % --- Simple Coulomb friction cone at contact ---
+    mu = 0.8;                             % friction coefficient
+    opti.subject_to(Fyk_plus >= 0);       % no "pulling" from the ground
+    opti.subject_to(-mu*Fyk_plus <= Fxk_plus <= mu*Fyk_plus);
+    
 
     % Cost function.
     % Minimize the weighted sum of the squared joint torques.
@@ -473,6 +497,13 @@ tm_opt = sol.value(tm);
 
 % T_opt = sol.value(T);
 % t_opt = 0: T_opt/N: T_opt;
+T_opt = sol.value(T);
+L_opt = sol.value(L);
+dt_opt = T_opt / N;
+
+% Build time vectors numerically
+time   = linspace(0, T_opt, N+1);  % for states
+time_u = time(1:end-1);            % for controls/forces
 
 Fx_opt = sol.value(Fx);
 Fy_opt = sol.value(Fy);
@@ -500,7 +531,7 @@ Tt_opt = sol.value(Tt);
 if generate_animation == true
     jointPositions_opt = getJointPositions(...
         lf,lm,lp,lt,tf_opt,tm_opt,tp_opt,tt_opt,xt_opt,yt_opt)';
-    generateAnimation(jointPositions_opt, dt, L);
+    generateAnimation(jointPositions_opt, dt_opt, L_opt);
 end
  
 %% Plots.
