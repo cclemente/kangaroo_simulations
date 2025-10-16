@@ -18,6 +18,12 @@ Kelly, *An Introduction to Trajectory Optimization: How to Do Your Own Direct Co
 
 ---
 
+This code is currently being updated and may not work in all cases. If it does work is should produce an animation like this.
+
+![animation](https://github.com/user-attachments/assets/b8e15491-ac67-4ac3-9d8f-c32a6af7c3dc)
+
+---
+
 ## Quick Start
 
 ### Requirements
@@ -37,7 +43,7 @@ Kelly, *An Introduction to Trajectory Optimization: How to Do Your Own Direct Co
 ### Run
 ```matlab
 clear; close all; clc;
-% Run the main file (e.g., kangaroo_hop_main.m if you rename it)
+% Run the main file (e.g., main.m unless you rename it)
 ```
 
 The solver will compute an optimal periodic hop and then:
